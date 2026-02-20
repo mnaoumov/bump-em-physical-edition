@@ -42,9 +42,18 @@ This document captures layout, colors, typography, and components from the in-ga
 - **No character names on board:** Do not print character names (Mihuil, Capt. Scurvy, Roswell, Jack) on the printable board—use quadrants/colors only.
 
 ### Game logo (bumper cars — best seen on BUMP'EM card)
-- **Where it appears:** Most clearly on the BUMP'EM card (ticket-bumpem.png): the central illustration.
-- **Description:** Two stylized bumper cars — rounded, flattened, cartoonish; white or light grey; positioned one slightly behind the other; with a white, fluid “splatter” or melting shape at the base where they meet. This graphic is the main game logo / brand mark.
-- **Use in print:** Include this bumper-cars illustration on the BUMP'EM card when replicating it. It can also be reused as the game logo on the rule sheet, box, or other materials if desired.
+- **Asset:** **`logo.png`** in the project root — use this for all card insertion.
+- **Where it appears:** Most clearly on the BUMP'EM card (ticket-bumpem.png): the central illustration. The same logo (bumper cars + splash) also appears on all number tickets, faded behind the value.
+- **Description:** “BUMP 'EM!” text (yellow, dark outline) above two stylized bumper cars and a white splash; halftone/comic style. Main game logo / brand mark.
+- **Use in print:** See “Logo usage on cards” below.
+
+### Logo usage on cards (verified from screenshots)
+- **BUMP'EM card (ticket-bumpem.png):** The logo is **fully visible**. It sits at the top of the card: yellow “BUMP 'EM!” text + two bumper cars + splash, full color and opacity. Insert the full logo asset here.
+- **Number tickets 1–12 (ticket-1.png through ticket-12.png):** The **same logo** is used as a **faded watermark behind the value number**. Verified on ticket-1, ticket-4, ticket-7, ticket-12:
+  - Placed **behind** the large numeral (and may extend slightly behind the first line of instruction text).
+  - **Faded / semi-transparent:** light purple-pink or very light grey; ghost-like, watermark effect; does not compete with the number or text.
+  - Opacity in the ~10–15% range (or tint the logo to a single light purple-pink/grey and use low opacity).
+- **Implementation:** Use the project logo asset **`logo.png`**. On BUMP'EM: place at full opacity. On number cards: place the same asset behind the number layer, then reduce opacity or apply a light purple-pink tint and low opacity so it reads as a faint background.
 
 ### Car tokens (for printable standees)
 - **Count:** 16 cars total — 4 per player color.
@@ -69,7 +78,7 @@ This document captures layout, colors, typography, and components from the in-ga
   - Fine linen, canvas, or speckled paper.
   - Slight distressed / aged look.
 - **Main number:** Large, bold, black or dark grey, sans-serif, centered in upper half; primary identifier.
-- **Background graphic (behind number):** Faint, semi-transparent, purple-pink or light grey; thematic (race track, car, trophy, checkered flag, etc.); halftone/dot or line-art; never obscures number or text.
+- **Background graphic (behind number):** The **same bumper-cars game logo** as on the BUMP'EM card, but faded: semi-transparent, light purple-pink or very light grey, watermark style; placed behind the large number (and optionally extending behind the top line of text); never obscures number or text (verified on ticket-1, 4, 7, 12).
 - **Instruction text:** Lower half of card:
   - **Color:** Dark green (ticket 1), dark grey/black (most others), dark olive/forest green (ticket 12).
   - **Font:** Clear sans-serif; line breaks as on card.
@@ -102,6 +111,9 @@ This document captures layout, colors, typography, and components from the in-ga
 ---
 
 ## 3. BUMP'EM card (ticket-bumpem.png)
+
+### Logo on this card
+- The game logo (bumper cars + splash, with yellow “BUMP 'EM!” text) is **fully visible** at the top of the card — not faded. Use the full logo asset at full opacity here.
 
 ### Layout and style
 - **Orientation:** Portrait; same card proportion as number tickets.
@@ -144,6 +156,7 @@ This document captures layout, colors, typography, and components from the in-ga
 - Halftone, yellow “BUMP 'EM!” with purple outline, bumper-car art, purple instruction text with “pit row” and “bump” bold.
 
 ### Assets to create or reuse
+- **Logo:** **`logo.png`** — use on all cards (full on BUMP'EM, faded watermark on tickets 1–12).
 - **Board:** Vector or high-res track segments, arrows, labels; gradient border; texture overlay.
 - **Tickets:** Card template (border, background, texture); 12 number + 1 BUMP'EM face art; type set in a clean sans-serif (e.g. Arial, Helvetica, or similar for body; bolder weight for numbers).
 - **Rule sheet:** Pull wording from PROJECT_SUMMARY.md; keep typography clear and consistent with card text.
