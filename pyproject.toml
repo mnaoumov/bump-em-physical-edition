@@ -1,0 +1,13 @@
+[project]
+name = "bumpem-printable"
+version = "0.1.0"
+description = "Printable Bump'em board game — physical edition"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "reportlab>=4.0.0",
+    "pillow>=10.0.0",
+]
+
+[dependency-groups]
+dev = []
