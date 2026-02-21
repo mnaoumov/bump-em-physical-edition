@@ -32,21 +32,28 @@ At each of the 2 junctions, the path crosses over itself.
 
 ### Cell numbering grid (from screenshot)
 
-The track cell numbers laid out on an 11×11 spatial grid (`.` = empty / base interior):
+The track cell numbers laid out on an 11×11 spatial grid (`.` = empty / base interior).
+Home-finish arms shown in `[brackets]` — same numbers as main track but separate paths.
 
-```
-55  56  57  58  59   .  37  38   .  39  40
-54   .   .   .  60   .  36   .   .   .  41
- .   .   .   .   1   .  35   .   .   .  42
-53   .   .   .   2   .  34   .   .   .  43
-52  51  50  49   .  48   .  47  46  45  44
- .   .   .   .   3   .  33   .   .   .   .
-14  15  16  17   .  18   .  19  20  21  22
-13   .   .   .   4   .  32   .   .   .  23
-12   .   .   .   5   .  31   .   .   .   .
-11   .   .   .   6   .  30   .   .   .  24
-10   9   .   8   7   .  29  28  27  26  25
-```
+|     |     |     |     |     |      |     |     |     |     |     |
+| --- | --- | --- | --- | --- | ---- | --- | --- | --- | --- | --- |
+| 55  | 56  | 57  | 58  | 59  | [60] | 37  | 38  | →   | 39  | 40  |
+| 54  |     |     |     | 60  | [61] | 36  |     |     |     | 41  |
+| ↑   |     |     |     | 1   | [62] | 35  |     |     |     | 42  |
+| 53  |     |     |     | 2   | [63] | 34  |     |     |     | 43  |
+| 52  | 51  | 50  | 49  | ↓←  | 48   | ↑←  | 47  | 46  | 45  | 44  |
+| [15]| [16]| [17]| [18]| 3   |      | 33  | [48]| [47]| [46]| [45]|
+| 14  | 15  | 16  | 17  | ↓→  | 18   | ↑→  | 19  | 20  | 21  | 22  |
+| 13  |     |     |     | 4   | [33] | 32  |     |     |     | 23  |
+| 12  |     |     |     | 5   | [32] | 31  |     |     |     | ↓   |
+| 11  |     |     |     | 6   | [31] | 30  |     |     |     | 24  |
+| 10  | 9   | ←   | 8   | 7   | [30] | 29  | 28  | 27  | 26  | 25  |
+
+**Arrows:** `→←↑↓` show direction of travel between consecutive cells.
+Arrow pairs at **crossings** show two perpendicular tracks passing through:
+`↓←` (2→3 / 48→49), `↑←` (33→34 / 47→48),
+`↓→` (3→4 / 17→18), `↑→` (18→19 / 32→33).
+**`[nn]`** = home-finish arm cell (not main track).
 
 #### Path direction (cell number order)
 
@@ -86,6 +93,18 @@ The track cell numbers laid out on an 11×11 spatial grid (`.` = empty / base in
 | 49   | Turbo            | Common |
 | 57   | Oil slick        | Red    |
 | 59   | Entrance to home | Red    |
+
+#### Home-finish arms
+
+Separate paths branching off the main track at each "Entrance to home" cell.
+They use the **same numbers** as the main track but are distinct paths — not to be confused.
+
+| Player | Entrance (main track) | Home arm cells | Finish |
+|--------|-----------------------|----------------|--------|
+| Red    | 59                    | 60, 61, 62, 63 | 63     |
+| Blue   | 14                    | 15, 16, 17, 18 | 18     |
+| Yellow | 29                    | 30, 31, 32, 33 | 33     |
+| Green  | 44                    | 45, 46, 47, 48 | 48     |
 
 ### Grid (16×16)
 - CELL_SIZE = (BOARD_SIZE - 2*MARGIN) / GRID_SIZE
