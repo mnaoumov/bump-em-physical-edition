@@ -125,7 +125,7 @@ TRACK_CELLS = [
     (2, 4),    # 15 cell 16  BLUE START
     (3, 4),    # 16 cell 17  End of oil slick
     # ── Center crossing to Yellow (cell 18) ──
-    (7, 4),    # 17 cell 18
+    (6, 4),    # 17 cell 18
     # ── Yellow top going right (cells 19-22) ──
     (10, 4),   # 18 cell 19  TURBO
     (11, 4),   # 19 cell 20
@@ -145,7 +145,7 @@ TRACK_CELLS = [
     (9, 2),    # 30 cell 31  YELLOW START
     (9, 3),    # 31 cell 32  End of oil slick
     # ── Center crossing to Green (cell 33) ──
-    (9, 7),    # 32 cell 33
+    (9, 6),    # 32 cell 33
     # ── Green left going up (cells 34-37) ──
     (9, 10),   # 33 cell 34  TURBO
     (9, 11),   # 34 cell 35
@@ -206,10 +206,10 @@ TRACK_ARROWS = _compute_arrow_directions(TRACK_CELLS)
 # Home stretch cells per player: 4 cells branching from home_entry toward center
 # Each stretch goes from entrance through the center channel toward the board middle
 HOME_CELLS = {
-    "Red":    [(6, 13), (6, 12), (6, 11), (6, 10)],     # col 6 going down, 1 gap from entry
-    "Blue":   [(0, 6),  (1, 6),  (2, 6),  (3, 6)],      # row 6 going right, 1 gap from entry
-    "Yellow": [(7, 0),  (7, 1),  (7, 2),  (7, 3)],      # col 7 going up, 1 gap from entry
-    "Green":  [(13, 7), (12, 7), (11, 7), (10, 7)],     # row 7 going left, 1 gap from entry
+    "Red":    [(5, 13), (6, 13), (6, 12), (6, 11)],     # right then down (L-shape from entry)
+    "Blue":   [(0, 5),  (0, 6),  (1, 6),  (2, 6)],      # up then right (L-shape from entry)
+    "Yellow": [(8, 0),  (7, 0),  (7, 1),  (7, 2)],      # left then up (L-shape from entry)
+    "Green":  [(13, 8), (13, 7), (12, 7), (11, 7)],     # down then left (L-shape from entry)
 }
 
 BOARD_BACKGROUND = HexColor("#1B5E20")
@@ -392,34 +392,16 @@ def _compute_gap_arrows():
 GAP_ARROWS = _compute_gap_arrows()
 
 
+GAP_ARROW_COLOR = HexColor("#333333")
+
 def _draw_crossing_symbol(canvas_obj, cx, cy, directions):
-    """Draw L-shaped arrows at crossing cells where two tracks intersect."""
-    canvas_obj.saveState()
-    canvas_obj.setStrokeColor(white)
-    canvas_obj.setFillColor(white)
-    canvas_obj.setLineWidth(1.5)
-    size = CELL_SIZE * 0.30
-    tip = size * 0.35
-    # Draw an L-shaped arrow for each direction pair
+    """Draw two arrow triangles offset in an L-shape at crossing cells."""
+    offset = CELL_SIZE * 0.17
     for direction in directions:
-        canvas_obj.saveState()
-        canvas_obj.translate(cx, cy)
-        canvas_obj.rotate(-90 * direction)
-        # Draw L: short stem + turn + arrowhead pointing in direction
-        path = canvas_obj.beginPath()
-        path.moveTo(-size, -size * 0.6)
-        path.lineTo(-size, 0)
-        path.lineTo(size, 0)
-        canvas_obj.drawPath(path, fill=0, stroke=1)
-        # Arrowhead at tip
-        arrow = canvas_obj.beginPath()
-        arrow.moveTo(size, 0)
-        arrow.lineTo(size - tip, tip * 0.7)
-        arrow.moveTo(size, 0)
-        arrow.lineTo(size - tip, -tip * 0.7)
-        canvas_obj.drawPath(arrow, fill=0, stroke=1)
-        canvas_obj.restoreState()
-    canvas_obj.restoreState()
+        if direction in (1, 3):  # vertical arrow: offset horizontally
+            _draw_arrow(canvas_obj, cx - offset, cy, direction, color=GAP_ARROW_COLOR)
+        else:  # horizontal arrow: offset vertically
+            _draw_arrow(canvas_obj, cx, cy - offset, direction, color=GAP_ARROW_COLOR)
 
 
 def _draw_gap_arrows(canvas_obj):
@@ -432,13 +414,13 @@ def _draw_gap_arrows(canvas_obj):
         cx = x + CELL_SIZE / 2
         cy = y + CELL_SIZE / 2
         if len(directions) == 1:
-            _draw_arrow(canvas_obj, cx, cy, directions[0])
+            _draw_arrow(canvas_obj, cx, cy, directions[0], color=GAP_ARROW_COLOR)
         else:
             # Crossing: draw L-shaped arrows showing both perpendicular directions
             _draw_crossing_symbol(canvas_obj, cx, cy, directions)
 
 
-def _draw_arrow(c, cx, cy, direction, size=7):
+def _draw_arrow(c, cx, cy, direction, size=7, color=white):
     c.saveState()
     c.translate(cx, cy)
     c.rotate(-90 * direction)
@@ -447,7 +429,7 @@ def _draw_arrow(c, cx, cy, direction, size=7):
     p.lineTo(-size * 0.5, size * 0.55)
     p.lineTo(-size * 0.5, -size * 0.55)
     p.close()
-    c.setFillColor(white)
+    c.setFillColor(color)
     c.drawPath(p, fill=1, stroke=0)
     c.restoreState()
 
@@ -500,26 +482,29 @@ def _draw_track_cells(c):
             p = _player_for_cell(idx, "start")
             c.setFillColor(HexColor(p["dark"]))
             c.setFont("Helvetica-Bold", 8)
-            c.drawCentredString(cx, cy - 8, "START")
+            c.drawCentredString(cx, cy - 6, "START")
         elif idx in TURBO_CELLS:
             c.setFillColor(HexColor("#6A1B9A"))
             c.setFont("Helvetica-Bold", 7)
-            c.drawCentredString(cx, cy - 8, "TURBO")
+            c.drawCentredString(cx, cy - 6, "TURBO")
         elif idx in OIL_SLICK_CELLS:
             c.setFillColor(white)
             c.setFont("Helvetica-Bold", 6)
-            c.drawCentredString(cx, cy - 8, "OIL SLICK")
+            c.drawCentredString(cx, cy - 6, "OIL SLICK")
         elif idx in OIL_SLICK_END_CELLS:
             c.setFillColor(white)
             c.setFont("Helvetica-Bold", 6)
-            c.drawCentredString(cx, cy - 8, "SLICK END")
+            c.drawCentredString(cx, cy - 6, "SLICK END")
         elif idx in HOME_ENTRY_CELLS:
             p = _player_for_cell(idx, "home_entry")
             c.setFillColor(HexColor(p["dark"]))
             c.setFont("Helvetica-Bold", 7)
-            c.drawCentredString(cx, cy - 8, "HOME \u25b8")
-        else:
-            _draw_arrow(c, cx, cy - 8, TRACK_ARROWS[idx])
+            c.drawCentredString(cx, cy - 6, "HOME \u25b8")
+
+        # Arrow on every cell — below label for special cells, centered for plain cells
+        has_label = idx in START_CELLS or idx in TURBO_CELLS or idx in OIL_SLICK_CELLS or idx in OIL_SLICK_END_CELLS or idx in HOME_ENTRY_CELLS
+        arrow_y = cy - 22 if has_label else cy - 8
+        _draw_arrow(c, cx, arrow_y, TRACK_ARROWS[idx], color=HexColor("#BDBDBD"))
 
 
 def _draw_home_stretches(c):
@@ -541,15 +526,15 @@ def _draw_home_stretches(c):
             cell_cx, cell_cy = x + w / 2, y + h / 2
             c.setFillColor(white)
             if is_finish:
-                # FINISH marker: number + checkered flag + text
+                # FINISH marker: number on top, small flag in middle, FINISH text at bottom
                 num = player["home_entry"] + i + 2
                 c.setFillColor(white)
-                c.setFont("Helvetica-Bold", 11)
-                c.drawCentredString(cell_cx, cell_cy + 16, str(num))
-                _draw_checkered_flag(c, cell_cx, cell_cy + 2, CELL_SIZE * 0.35)
+                c.setFont("Helvetica-Bold", 13)
+                c.drawCentredString(cell_cx, cell_cy + 20, str(num))
+                _draw_checkered_flag(c, cell_cx, cell_cy + 2, CELL_SIZE * 0.28)
                 c.setFillColor(white)
                 c.setFont("Helvetica-Bold", 7)
-                c.drawCentredString(cell_cx, cell_cy - 16, "FINISH")
+                c.drawCentredString(cell_cx, cell_cy - 18, "FINISH")
             else:
                 num = player["home_entry"] + i + 2  # continue numbering from track
                 c.setFont("Helvetica-Bold", 15)
