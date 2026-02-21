@@ -20,47 +20,72 @@ Each player base sits inside a rectangular track loop. The 4 loops connect into
 ONE continuous path. At each junction between two adjacent bases, the tracks
 **cross each other** (self-intersecting).
 
-```
-    ┌──→──→──→──→──→──→──┐
-    │  ┌─RED──────┐      │
-    ↑  │ (pit row)│      ↓
-    │  └──────────┘      │
-    │         ↑          │
-    ↑ ←←←←←←←X→→→→→→→→→ ↓    ← crossing! (horizontal crosses vertical)
-    │         ↓          │
-    │  ┌─BLUE─────┐      │
-    ↑  │ (pit row)│      ↓
-    │  └──────────┘      │
-    └──←──←──←──←──←──←──┘
-```
-
-The full board has 4 such base loops (Red TL, Green TR, Yellow BR, Blue BL)
-arranged in a 2×2 grid. Each adjacent pair shares a junction with a crossing.
-
-### How the self-crossing works
-
-```
-  ┌──→→→→→──────────→→→→→──┐
-  │ ┌─RED────┐    ┌─GREEN──┐│
-  ↑ │        │    │        │↓
-  │ └────────┘    └────────┘│
-  │      ↑            ↑     │
-  ↑←←←←←X→→→→→→→→→→←←X→→→→↓    ← 2 crossings (left + right junctions)
-  │      ↓            ↓     │
-  │ ┌─BLUE───┐    ┌─YELLOW─┐│
-  ↑ │        │    │        │↓
-  │ └────────┘    └────────┘│
-  └──←←←←←──────────←←←←←──┘
-```
-
-The track visits all 4 bases in sequence (Red → Green → Yellow → Blue → Red),
-going clockwise around each base. At each of the 4 junctions between adjacent
-bases, the path crosses over itself.
+The track visits all 4 bases in sequence (**Red → Blue → Yellow → Green → Red**),
+going clockwise around each base. The progression between bases is
+counterclockwise around the board center (down, right, up, left).
+At each of the 2 junctions, the path crosses over itself.
 
 ### Cell count
 - 60 cells total, 15 per base section
 - Each base section: ~12 cells going around the base + ~3 cells for the crossing transition
 - 4 crossing cells are shared between adjacent sections
+
+### Cell numbering grid (from screenshot)
+
+The track cell numbers laid out on an 11×11 spatial grid (`.` = empty / base interior):
+
+```
+55  56  57  58  59   .  37  38   .  39  40
+54   .   .   .  60   .  36   .   .   .  41
+ .   .   .   .   1   .  35   .   .   .  42
+53   .   .   .   2   .  34   .   .   .  43
+52  51  50  49   .  48   .  47  46  45  44
+ .   .   .   .   3   .  33   .   .   .   .
+14  15  16  17   .  18   .  19  20  21  22
+13   .   .   .   4   .  32   .   .   .  23
+12   .   .   .   5   .  31   .   .   .   .
+11   .   .   .   6   .  30   .   .   .  24
+10   9   .   8   7   .  29  28  27  26  25
+```
+
+#### Path direction (cell number order)
+
+- **Red (TL) — Mihuil:** 55→56→57→58→59→60→1→2 (down right side), then crosses to Blue
+- **Blue (BL) — Roswell:** 3→4→5→6→7→8→9→10→11→12→13→14→15→16→17→18 (around base), then crosses to Green
+- **Green (TR) — Capt. Scurvy:** (continues from crossing) →33→34→35→36→37→38→39→40→41→42→43→44→45→46→47→48 (around base), then crosses back to Red
+- **Yellow (BR) — Jack:** 19→20→21→22→23→24→25→26→27→28→29→30→31→32 (around base)
+
+#### Crossing junctions (where vertical & horizontal channels intersect)
+
+- **Top crossing** (between Red & Green): around cells 48 / 3 area (center row 4)
+- **Bottom crossing** (between Blue & Yellow): around cells 18 / 33 area (center row 6)
+- **Left crossing** (between Red & Blue): around cells 2-3 / 48-49 area (center col 4)
+- **Right crossing** (between Green & Yellow): around cells 33 / 47 area (center col 6)
+
+#### Cell roles (1–60)
+
+| Cell | Role             | Player |
+| ---- | ---------------- | ------ |
+| 1    | Start            | Red    |
+| 2    | End of oil slick | Red    |
+| 4    | Turbo            | Common |
+| 12   | Oil slick        | Blue   |
+| 14   | Entrance to home | Blue   |
+| 16   | Start            | Blue   |
+| 17   | End of oil slick | Blue   |
+| 19   | Turbo            | Common |
+| 27   | Oil slick        | Yellow |
+| 29   | Entrance to home | Yellow |
+| 31   | Start            | Yellow |
+| 32   | End of oil slick | Yellow |
+| 34   | Turbo            | Common |
+| 42   | Oil slick        | Green  |
+| 44   | Entrance to home | Green  |
+| 46   | Start            | Green  |
+| 47   | End of oil slick | Green  |
+| 49   | Turbo            | Common |
+| 57   | Oil slick        | Red    |
+| 59   | Entrance to home | Red    |
 
 ### Grid (16×16)
 - CELL_SIZE = (BOARD_SIZE - 2*MARGIN) / GRID_SIZE
@@ -183,6 +208,7 @@ Reshuffle when deck is exhausted.
 
 All screenshots are in the `screenshots/` folder:
 - `screenshots/board.png` — original game board
+- `screenshots/board-with-numbers.png` — board with cell numbers overlaid
 - `screenshots/ticket-1.png` through `screenshots/ticket-12.png` — ticket cards
 - `screenshots/ticket-bumpem.png` — BUMP'EM card
 - `screenshots/logo.png` — game logo asset
