@@ -830,11 +830,20 @@ def build_board_pdf():
     _draw_home_stretches(c)
     # 7. Center logo
     _draw_center_logo(c)
-    # 8. Dashed cut line at 20"×20" boundary
+    # 8. Cut guides extending to paper edges
     c.setDash(6, 4)
     c.setStrokeColor(HexColor("#AAAAAA"))
     c.setLineWidth(0.5)
-    c.rect(BLEED, BLEED, BOARD_SIZE, BOARD_SIZE, fill=0, stroke=1)
+    play_left = BLEED
+    play_bottom = BLEED
+    play_right = BLEED + BOARD_SIZE
+    play_top = BLEED + BOARD_SIZE
+    # Bottom and top edges
+    for y in (play_bottom, play_top):
+        c.line(0, y, PAGE_SIZE, y)
+    # Left and right edges
+    for x in (play_left, play_right):
+        c.line(x, 0, x, PAGE_SIZE)
     c.setDash()
     c.showPage()
     c.save()
