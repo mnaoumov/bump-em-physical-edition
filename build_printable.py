@@ -77,7 +77,8 @@ BOARD_MARGIN = BLEED  # cells start at the bleed offset
 GRID_SIZE = 12  # 12×12 grid
 NUM_CELLS = 60
 CELLS_PER_SIDE = 15
-CELL_SIZE = BOARD_SIZE / GRID_SIZE
+FOLD_STRIP_WIDTH = 0.15 * inch  # thin fold area between the two board halves
+CELL_SIZE = (BOARD_SIZE - FOLD_STRIP_WIDTH) / GRID_SIZE
 
 # Player definitions — 0-based indices, display = idx+1 (cells 1-60)
 # Board positions: Red=TL, Green=TR, Yellow=BR, Blue=BL
@@ -213,51 +214,55 @@ HOME_CELL_SIZE = CELL_SIZE * 0.9  # smaller than track cells, still fits car tok
 def _compute_home_geometry():
     """Compute pixel rects for HOME markers and arm cells.
 
-    Arms are positioned flush against the fold lines (col 6 / row 6 boundary)
-    so the board can be folded without creasing any cells.
+    Arms are positioned flush against the fold strip edges so the board
+    can be folded without creasing any cells.
     HOME marker is a small connector tab bridging entry cell to arm edge.
 
-    Fold lines: x = M + 6*C (vertical), y = M + 6*C (horizontal).
+    Fold strip: near edge at M + 6*C, far edge at M + 6*C + F.
+    Red/Blue arms flush against near edge; Yellow/Green against far edge.
     """
     S = HOME_CELL_SIZE
     M = BOARD_MARGIN
     C = CELL_SIZE
-    fold_line = M + 6 * C
-    marker_gap = fold_line - S - (M + 5 * C)  # gap between entry edge and arm edge
+    F = FOLD_STRIP_WIDTH
+    fold_near = M + 6 * C       # edge of fold strip closer to cols/rows 0-5
+    fold_far = fold_near + F    # edge of fold strip closer to cols/rows 6-11
     result = {}
 
-    # Red: entry (4,11), arm goes down. Right edge flush with fold line.
-    arm_x = fold_line - S
-    entry_top = M + 12 * C
+    # Red: entry (4,11), arm goes down. Right edge flush with fold strip near edge.
+    # Row 11 >= 6, so entry top shifts by F.
+    arm_x = fold_near - S
+    entry_top = M + 12 * C + F
     cells = [(arm_x, entry_top - (i + 1) * S, S, S) for i in range(4)]
-    marker = (M + 5 * C, entry_top - S, fold_line - S - (M + 5 * C), S)
+    marker = (M + 5 * C, entry_top - S, fold_near - S - (M + 5 * C), S)
     result["Red"] = {"marker": marker, "cells": cells}
 
-    # Blue: entry (0,4), arm goes right. Top edge flush with fold line.
-    arm_y = fold_line - S
+    # Blue: entry (0,4), arm goes right. Top edge flush with fold strip near edge.
+    # Entry in bottom-left quadrant — no fold offsets.
+    arm_y = fold_near - S
     cells = [(M + i * S, arm_y, S, S) for i in range(4)]
-    marker = (M, M + 5 * C, S, fold_line - S - (M + 5 * C))
+    marker = (M, M + 5 * C, S, fold_near - S - (M + 5 * C))
     result["Blue"] = {"marker": marker, "cells": cells}
 
-    # Yellow: entry (7,0), arm goes up. Left edge flush with fold line.
-    arm_x = fold_line
+    # Yellow: entry (7,0), arm goes up. Left edge flush with fold strip far edge.
+    # Col 7 >= 6, so entry x shifts by F.
+    arm_x = fold_far
     cells = [(arm_x, M + i * S, S, S) for i in range(4)]
-    marker = (arm_x + S, M, M + 7 * C - (arm_x + S), S)
+    marker = (arm_x + S, M, M + 7 * C + F - (arm_x + S), S)
     result["Yellow"] = {"marker": marker, "cells": cells}
 
-    # Green: entry (11,7), arm goes left. Bottom edge flush with fold line.
-    arm_y = fold_line
-    entry_right = M + 12 * C
+    # Green: entry (11,7), arm goes left. Bottom edge flush with fold strip far edge.
+    # Col 11 >= 6 and row 7 >= 6, so both shift by F.
+    arm_y = fold_far
+    entry_right = M + 12 * C + F
     cells = [(entry_right - (i + 1) * S, arm_y, S, S) for i in range(4)]
-    marker = (entry_right - S, arm_y + S, S, M + 7 * C - (arm_y + S))
+    marker = (entry_right - S, arm_y + S, S, M + 7 * C + F - (arm_y + S))
     result["Green"] = {"marker": marker, "cells": cells}
 
     return result
 
 
 HOME_GEOMETRY = _compute_home_geometry()
-
-FOLD_STRIP_WIDTH = 6  # points (~2 mm), thin visible fold guide zone
 
 TRACK_GRAY = HexColor("#D0D0D0")
 CELL_WHITE = HexColor("#F5F5F5")
@@ -275,8 +280,14 @@ def ensure_output_dir():
 # ── Track geometry ───────────────────────────────────────────────
 
 def _grid_xy(col, row):
-    """Bottom-left corner of grid cell (col, row) in PDF coordinates."""
-    return (BOARD_MARGIN + col * CELL_SIZE, BOARD_MARGIN + row * CELL_SIZE)
+    """Bottom-left corner of grid cell (col, row) in PDF coordinates.
+
+    Cells in cols 6-11 / rows 6-11 are shifted by FOLD_STRIP_WIDTH
+    to leave an empty fold channel between the two board halves.
+    """
+    x = BOARD_MARGIN + col * CELL_SIZE + (FOLD_STRIP_WIDTH if col >= 6 else 0)
+    y = BOARD_MARGIN + row * CELL_SIZE + (FOLD_STRIP_WIDTH if row >= 6 else 0)
+    return (x, y)
 
 
 def _cell_rect(idx):
@@ -765,31 +776,36 @@ def _draw_center_logo(c):
 
 
 def _draw_fold_guides(canvas_obj):
-    """Draw thin fold area strips at the vertical and horizontal center of the board.
+    """Draw fold area rectangles at the board center.
 
-    Two parallel dashed lines per fold axis, forming a narrow fold zone.
-    Drawn on top of the track band so they show through gap areas,
-    but below individual cells and arrows so content isn't obscured.
+    Thin filled strips exclusively for folding, between game cells.
+    Extend into the bleed area so the print shop can locate them.
+    A dashed center line marks the exact fold position.
     """
-    fold_position = BOARD_MARGIN + 6 * CELL_SIZE
-    half_width = FOLD_STRIP_WIDTH / 2
+    fold_strip_start = BOARD_MARGIN + 6 * CELL_SIZE
+    fold_center = fold_strip_start + FOLD_STRIP_WIDTH / 2
 
     canvas_obj.saveState()
-    canvas_obj.setStrokeColor(HexColor("#BBBBBB"))
+
+    # Filled fold strips
+    canvas_obj.setFillColor(HexColor("#E8E8E8"))
+    canvas_obj.setStrokeColor(HexColor("#999999"))
+    canvas_obj.setLineWidth(0.5)
+    # Vertical fold strip — full page height
+    canvas_obj.rect(fold_strip_start, 0, FOLD_STRIP_WIDTH, PAGE_SIZE,
+                    fill=1, stroke=1)
+    # Horizontal fold strip — full page width
+    canvas_obj.rect(0, fold_strip_start, PAGE_SIZE, FOLD_STRIP_WIDTH,
+                    fill=1, stroke=1)
+
+    # Dashed center line for exact fold position
+    canvas_obj.setStrokeColor(HexColor("#888888"))
     canvas_obj.setLineWidth(0.4)
     canvas_obj.setDash(4, 3)
-
-    # Vertical fold area (between columns 5 and 6)
-    for offset in (-half_width, half_width):
-        x = fold_position + offset
-        canvas_obj.line(x, BOARD_MARGIN, x, BOARD_MARGIN + BOARD_SIZE)
-
-    # Horizontal fold area (between rows 5 and 6)
-    for offset in (-half_width, half_width):
-        y = fold_position + offset
-        canvas_obj.line(BOARD_MARGIN, y, BOARD_MARGIN + BOARD_SIZE, y)
-
+    canvas_obj.line(fold_center, 0, fold_center, PAGE_SIZE)
+    canvas_obj.line(0, fold_center, PAGE_SIZE, fold_center)
     canvas_obj.setDash()
+
     canvas_obj.restoreState()
 
 
