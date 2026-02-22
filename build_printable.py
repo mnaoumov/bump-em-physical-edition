@@ -213,54 +213,51 @@ HOME_CELL_SIZE = CELL_SIZE * 0.9  # smaller than track cells, still fits car tok
 def _compute_home_geometry():
     """Compute pixel rects for HOME markers and arm cells.
 
-    Each arm is centered in the 2-cell gap between the entry cell and
-    the opposite-side cell. The arm aligns with the entry cell's edge
-    closest to the gap. HOME marker bridges from entry edge to arm edge.
+    Arms are positioned flush against the fold lines (col 6 / row 6 boundary)
+    so the board can be folded without creasing any cells.
+    HOME marker is a small connector tab bridging entry cell to arm edge.
 
-    Gap positions: cols 5–7 (vertical channel), rows 5–7 (horizontal channel).
-    Gap center: col 6 / row 6.
+    Fold lines: x = M + 6*C (vertical), y = M + 6*C (horizontal).
     """
     S = HOME_CELL_SIZE
     M = BOARD_MARGIN
     C = CELL_SIZE
-    gap_center = M + 6 * C  # center of the 2-cell gap in both axes
-    marker_thickness = C - S / 2  # bridges from entry edge to arm edge
+    fold_line = M + 6 * C
+    marker_gap = fold_line - S - (M + 5 * C)  # gap between entry edge and arm edge
     result = {}
 
-    # Red: entry (4,11), arm goes down, centered in col 5–7 gap
-    # Top-aligned with cell 59's top edge
-    arm_x = gap_center - S / 2
+    # Red: entry (4,11), arm goes down. Right edge flush with fold line.
+    arm_x = fold_line - S
     entry_top = M + 12 * C
     cells = [(arm_x, entry_top - (i + 1) * S, S, S) for i in range(4)]
-    marker = (M + 5 * C, entry_top - S, marker_thickness, S)
+    marker = (M + 5 * C, entry_top - S, fold_line - S - (M + 5 * C), S)
     result["Red"] = {"marker": marker, "cells": cells}
 
-    # Blue: entry (0,4), arm goes right, centered in row 5–7 gap
-    # Left-aligned with cell 14's left edge
-    arm_y = gap_center - S / 2
+    # Blue: entry (0,4), arm goes right. Top edge flush with fold line.
+    arm_y = fold_line - S
     cells = [(M + i * S, arm_y, S, S) for i in range(4)]
-    marker = (M, M + 5 * C, S, marker_thickness)
+    marker = (M, M + 5 * C, S, fold_line - S - (M + 5 * C))
     result["Blue"] = {"marker": marker, "cells": cells}
 
-    # Yellow: entry (7,0), arm goes up, centered in col 5–7 gap
-    # Bottom-aligned with cell 29's bottom edge
-    arm_x = gap_center - S / 2
+    # Yellow: entry (7,0), arm goes up. Left edge flush with fold line.
+    arm_x = fold_line
     cells = [(arm_x, M + i * S, S, S) for i in range(4)]
-    marker = (gap_center + S / 2, M, marker_thickness, S)
+    marker = (arm_x + S, M, M + 7 * C - (arm_x + S), S)
     result["Yellow"] = {"marker": marker, "cells": cells}
 
-    # Green: entry (11,7), arm goes left, centered in row 5–7 gap
-    # Right-aligned with cell 44's right edge
-    arm_y = gap_center - S / 2
+    # Green: entry (11,7), arm goes left. Bottom edge flush with fold line.
+    arm_y = fold_line
     entry_right = M + 12 * C
     cells = [(entry_right - (i + 1) * S, arm_y, S, S) for i in range(4)]
-    marker = (entry_right - S, gap_center + S / 2, S, marker_thickness)
+    marker = (entry_right - S, arm_y + S, S, M + 7 * C - (arm_y + S))
     result["Green"] = {"marker": marker, "cells": cells}
 
     return result
 
 
 HOME_GEOMETRY = _compute_home_geometry()
+
+FOLD_STRIP_WIDTH = 6  # points (~2 mm), thin visible fold guide zone
 
 TRACK_GRAY = HexColor("#D0D0D0")
 CELL_WHITE = HexColor("#F5F5F5")
@@ -675,18 +672,12 @@ def _draw_home_stretches(c):
         dark = HexColor(player["dark"])
         geom = HOME_GEOMETRY[player["name"]]
 
-        # Draw HOME marker (half-cell connector)
+        # Draw HOME marker (half-cell connector, no label)
         mx, my, mw, mh = geom["marker"]
         c.setFillColor(light)
         c.setStrokeColor(CELL_BORDER)
         c.setLineWidth(0.8)
         c.rect(mx, my, mw, mh, fill=1, stroke=1)
-        marker_cx = mx + mw / 2
-        marker_cy = my + mh / 2
-        _draw_icon_house(c, marker_cx, marker_cy + 5, size=14, color=dark)
-        c.setFillColor(dark)
-        c.setFont("Helvetica-Bold", 6)
-        c.drawCentredString(marker_cx, marker_cy - 10, "HOME")
 
         # Draw arm cells [60]-[63] (smaller than track cells)
         home_cells = geom["cells"]
@@ -710,6 +701,13 @@ def _draw_home_stretches(c):
                 c.setFillColor(white)
                 c.setFont("Helvetica-Bold", 6)
                 c.drawCentredString(cell_cx, cell_cy - 16, "FINISH")
+            elif i == 0:
+                # First home arm cell: show HOME icon and label
+                c.setFont("Helvetica-Bold", 12)
+                c.drawCentredString(cell_cx, cell_cy + 22, str(num))
+                _draw_icon_house(c, cell_cx, cell_cy + 4, size=14, color=white)
+                c.setFont("Helvetica-Bold", 6)
+                c.drawCentredString(cell_cx, cell_cy - 14, "HOME")
             else:
                 c.setFont("Helvetica-Bold", 14)
                 c.drawCentredString(cell_cx, cell_cy - 5, str(num))
@@ -766,6 +764,35 @@ def _draw_center_logo(c):
                 width=logo_width, height=logo_height)
 
 
+def _draw_fold_guides(canvas_obj):
+    """Draw thin fold area strips at the vertical and horizontal center of the board.
+
+    Two parallel dashed lines per fold axis, forming a narrow fold zone.
+    Drawn on top of the track band so they show through gap areas,
+    but below individual cells and arrows so content isn't obscured.
+    """
+    fold_position = BOARD_MARGIN + 6 * CELL_SIZE
+    half_width = FOLD_STRIP_WIDTH / 2
+
+    canvas_obj.saveState()
+    canvas_obj.setStrokeColor(HexColor("#BBBBBB"))
+    canvas_obj.setLineWidth(0.4)
+    canvas_obj.setDash(4, 3)
+
+    # Vertical fold area (between columns 5 and 6)
+    for offset in (-half_width, half_width):
+        x = fold_position + offset
+        canvas_obj.line(x, BOARD_MARGIN, x, BOARD_MARGIN + BOARD_SIZE)
+
+    # Horizontal fold area (between rows 5 and 6)
+    for offset in (-half_width, half_width):
+        y = fold_position + offset
+        canvas_obj.line(BOARD_MARGIN, y, BOARD_MARGIN + BOARD_SIZE, y)
+
+    canvas_obj.setDash()
+    canvas_obj.restoreState()
+
+
 def build_board_pdf():
     ensure_output_dir()
     pdf_path = OUT_DIR / "board.pdf"
@@ -777,6 +804,8 @@ def build_board_pdf():
     _draw_pit_rows(c)
     # 3. Track band
     _draw_track_band(c)
+    # 3.5. Fold guide strips at center
+    _draw_fold_guides(c)
     # 4. Arrows on gap cells
     _draw_gap_arrows(c)
     # 5. Individual track cells
