@@ -6,7 +6,7 @@ Uses Python + reportlab. Run with: `uv run python build_printable.py`
 ## User Preferences
 - **No cryptic variable names**: use full words (padding, extension, radius — not pad, ext, r)
 - **No unnecessary abbreviations**: in local variables too
-- Board is 20"×20" single page for poster printing
+- Board play area is 20"×20"; page is 21"×21" with 0.5" bleed and dashed cut lines
 
 ---
 
@@ -136,11 +136,10 @@ They use the **same numbers** as the main track but are distinct paths — not t
 - Tokens: Four small oval tokens per player (color-matched) below the portrait
 
 ### Board visual design
-- **Background:** Dark green with subtle interwoven fabric/mesh texture
-- **Outer border:** Thick frame with gradient: red → orange → yellow → green → light blue → purple (neon/glow effect)
+- **Background:** White (cells fill full 20"×20" play area, 0.5" bleed with dashed cut lines)
 - **Track:** White track with grey borders; central path connects four quadrants
 - **Typography:** Simple sans-serif for START, FINISH, Oil Slick, TURBO
-- **Colors:** Saturated red, green, light blue, yellow for paths; rainbow gradient on outer board border
+- **Colors:** Saturated red, green, light blue, yellow for paths
 
 ---
 

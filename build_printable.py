@@ -71,11 +71,13 @@ CARD_INFO = {
 
 # ── Board constants ──────────────────────────────────────────────
 BOARD_SIZE = 20 * inch
-BOARD_MARGIN = 1 * inch
-GRID_SIZE = 12  # 12×12 grid (removed center cols 6,7 and rows 6,7)
+BLEED = 0.5 * inch  # extra space around the play area for printing
+PAGE_SIZE = BOARD_SIZE + 2 * BLEED
+BOARD_MARGIN = BLEED  # cells start at the bleed offset
+GRID_SIZE = 12  # 12×12 grid
 NUM_CELLS = 60
 CELLS_PER_SIDE = 15
-CELL_SIZE = (BOARD_SIZE - 2 * BOARD_MARGIN) / GRID_SIZE  # square cells, 81pt each
+CELL_SIZE = BOARD_SIZE / GRID_SIZE
 
 # Player definitions — 0-based indices, display = idx+1 (cells 1-60)
 # Board positions: Red=TL, Green=TR, Yellow=BR, Blue=BL
@@ -260,7 +262,6 @@ def _compute_home_geometry():
 
 HOME_GEOMETRY = _compute_home_geometry()
 
-BOARD_BACKGROUND = HexColor("#1B5E20")
 TRACK_GRAY = HexColor("#D0D0D0")
 CELL_WHITE = HexColor("#F5F5F5")
 CELL_BORDER = HexColor("#888888")
@@ -295,19 +296,6 @@ def _cell_center(idx):
 
 CAR_TOKEN_RADIUS = CELL_SIZE * 0.44
 
-
-def _draw_fabric_texture(canvas_obj):
-    """Draw subtle woven fabric/mesh texture over the board background."""
-    canvas_obj.saveState()
-    canvas_obj.setStrokeColor(Color(0, 0.22, 0, alpha=0.07))
-    canvas_obj.setLineWidth(0.3)
-    spacing = 4
-    board_int = int(BOARD_SIZE)
-    for y_pos in range(0, board_int, spacing):
-        canvas_obj.line(0, y_pos, BOARD_SIZE, y_pos)
-    for x_pos in range(0, board_int, spacing):
-        canvas_obj.line(x_pos, 0, x_pos, BOARD_SIZE)
-    canvas_obj.restoreState()
 
 
 def _draw_checkered_flag(canvas_obj, center_x, center_y, size):
@@ -348,8 +336,6 @@ def _fill_gap_positions(position_a, position_b):
 
 def _draw_track_band(canvas_obj):
     """Draw track band by filling each cell and all gaps between consecutive cells."""
-    canvas_obj.setFillColor(TRACK_GRAY)
-
     # Collect all grid positions that need grey fill
     fill_positions = set()
     home_fill_rects = []  # (x, y, w, h) for float-coord home cells
@@ -367,13 +353,16 @@ def _draw_track_band(canvas_obj):
         for cell_rect in geom["cells"]:
             home_fill_rects.append(cell_rect)
 
-    # Draw all filled positions (no stroke — borders drawn by cell renderers)
+    # Draw all filled positions with uniform border
+    canvas_obj.setFillColor(TRACK_GRAY)
+    canvas_obj.setStrokeColor(CELL_BORDER)
+    canvas_obj.setLineWidth(0.8)
     for col, row in fill_positions:
         x, y = _grid_xy(col, row)
-        canvas_obj.rect(x, y, CELL_SIZE, CELL_SIZE, fill=1, stroke=0)
-    # Draw home arm fills (float coords)
+        canvas_obj.rect(x, y, CELL_SIZE, CELL_SIZE, fill=1, stroke=1)
+    # Draw home arm fills with border
     for hx, hy, hw, hh in home_fill_rects:
-        canvas_obj.rect(hx, hy, hw, hh, fill=1, stroke=0)
+        canvas_obj.rect(hx, hy, hw, hh, fill=1, stroke=1)
 
 
 def _compute_gap_arrows():
@@ -761,16 +750,15 @@ def _draw_pit_rows(c):
 
 def _draw_center_logo(c):
     """Draw the logo.png image in the center of the board."""
-    center_x = BOARD_SIZE / 2
-    center_y = BOARD_SIZE / 2
+    center_x = PAGE_SIZE / 2
+    center_y = PAGE_SIZE / 2
     logo = PILImage.open(LOGO_PATH).convert("RGBA")
-    background = PILImage.new("RGBA", logo.size, (27, 94, 32, 255))
+    background = PILImage.new("RGBA", logo.size, (255, 255, 255, 255))
     composited = PILImage.alpha_composite(background, logo).convert("RGB")
     buffer = io.BytesIO()
     composited.save(buffer, format="PNG")
     buffer.seek(0)
     reader = ImageReader(buffer)
-    aspect = logo.width / logo.height
     logo_width = 2 * CELL_SIZE
     logo_height = 2 * CELL_SIZE
     c.drawImage(reader,
@@ -781,24 +769,28 @@ def _draw_center_logo(c):
 def build_board_pdf():
     ensure_output_dir()
     pdf_path = OUT_DIR / "board.pdf"
-    c = canvas.Canvas(str(pdf_path), pagesize=(BOARD_SIZE, BOARD_SIZE))
-    # 1. Background
-    c.setFillColor(BOARD_BACKGROUND)
-    c.rect(0, 0, BOARD_SIZE, BOARD_SIZE, fill=1, stroke=0)
-    # 2. Fabric texture overlay
-    _draw_fabric_texture(c)
-    # 3. Player base areas (colored corners, behind the track)
+    c = canvas.Canvas(str(pdf_path), pagesize=(PAGE_SIZE, PAGE_SIZE))
+    # 1. White background (bleed area included)
+    c.setFillColor(white)
+    c.rect(0, 0, PAGE_SIZE, PAGE_SIZE, fill=1, stroke=0)
+    # 2. Player base areas (colored corners, behind the track)
     _draw_pit_rows(c)
-    # 4. Track band
+    # 3. Track band
     _draw_track_band(c)
-    # 5. Arrows on gap cells
+    # 4. Arrows on gap cells
     _draw_gap_arrows(c)
-    # 6. Individual track cells
+    # 5. Individual track cells
     _draw_track_cells(c)
-    # 7. Home stretches
+    # 6. Home stretches
     _draw_home_stretches(c)
-    # 8. Center logo
+    # 7. Center logo
     _draw_center_logo(c)
+    # 8. Dashed cut line at 20"×20" boundary
+    c.setDash(6, 4)
+    c.setStrokeColor(HexColor("#AAAAAA"))
+    c.setLineWidth(0.5)
+    c.rect(BLEED, BLEED, BOARD_SIZE, BOARD_SIZE, fill=0, stroke=1)
+    c.setDash()
     c.showPage()
     c.save()
     print("Wrote", pdf_path)
