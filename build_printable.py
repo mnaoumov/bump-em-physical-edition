@@ -72,7 +72,7 @@ CARD_INFO = {
 # ── Board constants ──────────────────────────────────────────────
 BOARD_SIZE = 20 * inch
 BOARD_MARGIN = 1 * inch
-GRID_SIZE = 14  # 14×14 grid (removed empty cols 2,13 and rows 2,12)
+GRID_SIZE = 12  # 12×12 grid (removed center cols 6,7 and rows 6,7)
 NUM_CELLS = 60
 CELLS_PER_SIDE = 15
 CELL_SIZE = (BOARD_SIZE - 2 * BOARD_MARGIN) / GRID_SIZE  # square cells, 81pt each
@@ -102,10 +102,10 @@ HOME_ENTRY_CELLS = {p["home_entry"] for p in PLAYERS}
 # Track goes clockwise around each base, counterclockwise between bases
 TRACK_CELLS = [
     # ── Red right side going down (cells 1-2) ──
-    (4, 11),   # 0  cell 1  RED START
-    (4, 10),   # 1  cell 2  End of oil slick
+    (4, 9),    # 0  cell 1  RED START
+    (4, 8),    # 1  cell 2  End of oil slick
     # ── Center crossing to Blue (cell 3) ──
-    (4, 7),    # 2  cell 3
+    (4, 6),    # 2  cell 3
     # ── Blue right side going down (cells 4-7) ──
     (4, 3),    # 3  cell 4  TURBO
     (4, 2),    # 4  cell 5
@@ -125,62 +125,62 @@ TRACK_CELLS = [
     (2, 4),    # 15 cell 16  BLUE START
     (3, 4),    # 16 cell 17  End of oil slick
     # ── Center crossing to Yellow (cell 18) ──
-    (6, 4),    # 17 cell 18
+    (5, 4),    # 17 cell 18
     # ── Yellow top going right (cells 19-22) ──
-    (10, 4),   # 18 cell 19  TURBO
-    (11, 4),   # 19 cell 20
-    (12, 4),   # 20 cell 21
-    (13, 4),   # 21 cell 22
+    (8, 4),    # 18 cell 19  TURBO
+    (9, 4),    # 19 cell 20
+    (10, 4),   # 20 cell 21
+    (11, 4),   # 21 cell 22
     # ── Yellow right going down (cells 23-25) ──
-    (13, 3),   # 22 cell 23
-    (13, 1),   # 23 cell 24
-    (13, 0),   # 24 cell 25
+    (11, 3),   # 22 cell 23
+    (11, 1),   # 23 cell 24
+    (11, 0),   # 24 cell 25
     # ── Yellow bottom going left (cells 26-29) ──
-    (12, 0),   # 25 cell 26
-    (11, 0),   # 26 cell 27  OIL SLICK
-    (10, 0),   # 27 cell 28
-    (9, 0),    # 28 cell 29  Entrance to home
+    (10, 0),   # 25 cell 26
+    (9, 0),    # 26 cell 27  OIL SLICK
+    (8, 0),    # 27 cell 28
+    (7, 0),    # 28 cell 29  Entrance to home
     # ── Yellow left going up (cells 30-32) ──
-    (9, 1),    # 29 cell 30
-    (9, 2),    # 30 cell 31  YELLOW START
-    (9, 3),    # 31 cell 32  End of oil slick
+    (7, 1),    # 29 cell 30
+    (7, 2),    # 30 cell 31  YELLOW START
+    (7, 3),    # 31 cell 32  End of oil slick
     # ── Center crossing to Green (cell 33) ──
-    (9, 6),    # 32 cell 33
+    (7, 5),    # 32 cell 33
     # ── Green left going up (cells 34-37) ──
-    (9, 10),   # 33 cell 34  TURBO
-    (9, 11),   # 34 cell 35
-    (9, 12),   # 35 cell 36
-    (9, 13),   # 36 cell 37
+    (7, 8),    # 33 cell 34  TURBO
+    (7, 9),    # 34 cell 35
+    (7, 10),   # 35 cell 36
+    (7, 11),   # 36 cell 37
     # ── Green top going right (cells 38-40) ──
-    (10, 13),  # 37 cell 38
-    (12, 13),  # 38 cell 39
-    (13, 13),  # 39 cell 40
+    (8, 11),   # 37 cell 38
+    (10, 11),  # 38 cell 39
+    (11, 11),  # 39 cell 40
     # ── Green right going down (cells 41-44) ──
-    (13, 12),  # 40 cell 41
-    (13, 11),  # 41 cell 42  OIL SLICK
-    (13, 10),  # 42 cell 43
-    (13, 9),   # 43 cell 44  Entrance to home
+    (11, 10),  # 40 cell 41
+    (11, 9),   # 41 cell 42  OIL SLICK
+    (11, 8),   # 42 cell 43
+    (11, 7),   # 43 cell 44  Entrance to home
     # ── Green bottom going left (cells 45-47) ──
-    (12, 9),   # 44 cell 45
-    (11, 9),   # 45 cell 46  GREEN START
-    (10, 9),   # 46 cell 47  End of oil slick
+    (10, 7),   # 44 cell 45
+    (9, 7),    # 45 cell 46  GREEN START
+    (8, 7),    # 46 cell 47  End of oil slick
     # ── Center crossing to Red (cell 48) ──
-    (7, 9),    # 47 cell 48
+    (6, 7),    # 47 cell 48
     # ── Red bottom going left (cells 49-52) ──
-    (3, 9),    # 48 cell 49  TURBO
-    (2, 9),    # 49 cell 50
-    (1, 9),    # 50 cell 51
-    (0, 9),    # 51 cell 52
+    (3, 7),    # 48 cell 49  TURBO
+    (2, 7),    # 49 cell 50
+    (1, 7),    # 50 cell 51
+    (0, 7),    # 51 cell 52
     # ── Red left going up (cells 53-55) ──
-    (0, 10),   # 52 cell 53
-    (0, 12),   # 53 cell 54
-    (0, 13),   # 54 cell 55
+    (0, 8),    # 52 cell 53
+    (0, 10),   # 53 cell 54
+    (0, 11),   # 54 cell 55
     # ── Red top going right (cells 56-60) ──
-    (1, 13),   # 55 cell 56
-    (2, 13),   # 56 cell 57  OIL SLICK
-    (3, 13),   # 57 cell 58
-    (4, 13),   # 58 cell 59  Entrance to home
-    (4, 12),   # 59 cell 60
+    (1, 11),   # 55 cell 56
+    (2, 11),   # 56 cell 57  OIL SLICK
+    (3, 11),   # 57 cell 58
+    (4, 11),   # 58 cell 59  Entrance to home
+    (4, 10),   # 59 cell 60
 ]
 
 
@@ -205,12 +205,60 @@ TRACK_ARROWS = _compute_arrow_directions(TRACK_CELLS)
 
 # Home stretch cells per player: 4 cells branching from home_entry toward center
 # Each stretch goes from entrance through the center channel toward the board middle
-HOME_CELLS = {
-    "Red":    [(5, 13), (6, 13), (6, 12), (6, 11)],     # right then down (L-shape from entry)
-    "Blue":   [(0, 5),  (0, 6),  (1, 6),  (2, 6)],      # up then right (L-shape from entry)
-    "Yellow": [(8, 0),  (7, 0),  (7, 1),  (7, 2)],      # left then up (L-shape from entry)
-    "Green":  [(13, 8), (13, 7), (12, 7), (11, 7)],     # down then left (L-shape from entry)
-}
+HOME_CELL_SIZE = CELL_SIZE * 0.9  # smaller than track cells, still fits car token
+
+
+def _compute_home_geometry():
+    """Compute pixel rects for HOME markers and arm cells.
+
+    Each arm is centered in the 2-cell gap between the entry cell and
+    the opposite-side cell. The arm aligns with the entry cell's edge
+    closest to the gap. HOME marker bridges from entry edge to arm edge.
+
+    Gap positions: cols 5–7 (vertical channel), rows 5–7 (horizontal channel).
+    Gap center: col 6 / row 6.
+    """
+    S = HOME_CELL_SIZE
+    M = BOARD_MARGIN
+    C = CELL_SIZE
+    gap_center = M + 6 * C  # center of the 2-cell gap in both axes
+    marker_thickness = C - S / 2  # bridges from entry edge to arm edge
+    result = {}
+
+    # Red: entry (4,11), arm goes down, centered in col 5–7 gap
+    # Top-aligned with cell 59's top edge
+    arm_x = gap_center - S / 2
+    entry_top = M + 12 * C
+    cells = [(arm_x, entry_top - (i + 1) * S, S, S) for i in range(4)]
+    marker = (M + 5 * C, entry_top - S, marker_thickness, S)
+    result["Red"] = {"marker": marker, "cells": cells}
+
+    # Blue: entry (0,4), arm goes right, centered in row 5–7 gap
+    # Left-aligned with cell 14's left edge
+    arm_y = gap_center - S / 2
+    cells = [(M + i * S, arm_y, S, S) for i in range(4)]
+    marker = (M, M + 5 * C, S, marker_thickness)
+    result["Blue"] = {"marker": marker, "cells": cells}
+
+    # Yellow: entry (7,0), arm goes up, centered in col 5–7 gap
+    # Bottom-aligned with cell 29's bottom edge
+    arm_x = gap_center - S / 2
+    cells = [(arm_x, M + i * S, S, S) for i in range(4)]
+    marker = (gap_center + S / 2, M, marker_thickness, S)
+    result["Yellow"] = {"marker": marker, "cells": cells}
+
+    # Green: entry (11,7), arm goes left, centered in row 5–7 gap
+    # Right-aligned with cell 44's right edge
+    arm_y = gap_center - S / 2
+    entry_right = M + 12 * C
+    cells = [(entry_right - (i + 1) * S, arm_y, S, S) for i in range(4)]
+    marker = (entry_right - S, gap_center + S / 2, S, marker_thickness)
+    result["Green"] = {"marker": marker, "cells": cells}
+
+    return result
+
+
+HOME_GEOMETRY = _compute_home_geometry()
 
 BOARD_BACKGROUND = HexColor("#1B5E20")
 TRACK_GRAY = HexColor("#D0D0D0")
@@ -243,15 +291,6 @@ def _cell_rect(idx):
 def _cell_center(idx):
     x, y, w, h = _cell_rect(idx)
     return x + w / 2, y + h / 2
-
-
-def _home_rects(player):
-    """4 home-stretch cells for the given player."""
-    cells = []
-    for col, row in HOME_CELLS[player["name"]]:
-        x, y = _grid_xy(col, row)
-        cells.append((x, y, CELL_SIZE, CELL_SIZE))
-    return cells
 
 
 CAR_TOKEN_RADIUS = CELL_SIZE * 0.44
@@ -313,6 +352,7 @@ def _draw_track_band(canvas_obj):
 
     # Collect all grid positions that need grey fill
     fill_positions = set()
+    home_fill_rects = []  # (x, y, w, h) for float-coord home cells
 
     # Main track cells and gaps between consecutive cells
     for index in range(len(TRACK_CELLS)):
@@ -320,21 +360,20 @@ def _draw_track_band(canvas_obj):
         next_cell = TRACK_CELLS[(index + 1) % len(TRACK_CELLS)]
         fill_positions |= _fill_gap_positions(TRACK_CELLS[index], next_cell)
 
-    # Home stretch cells, internal gaps, and connection from home entry to first home cell
+    # Home stretch: fill marker + arm cells as pixel rectangles
     for player in PLAYERS:
-        cells = HOME_CELLS[player["name"]]
-        entry_position = TRACK_CELLS[player["home_entry"]]
-        # Gap from home entry on main track to first home cell
-        fill_positions |= _fill_gap_positions(entry_position, cells[0])
-        for i, position in enumerate(cells):
-            fill_positions.add(position)
-            if i < len(cells) - 1:
-                fill_positions |= _fill_gap_positions(position, cells[i + 1])
+        geom = HOME_GEOMETRY[player["name"]]
+        home_fill_rects.append(geom["marker"])
+        for cell_rect in geom["cells"]:
+            home_fill_rects.append(cell_rect)
 
-    # Draw all filled positions
+    # Draw all filled positions (no stroke — borders drawn by cell renderers)
     for col, row in fill_positions:
         x, y = _grid_xy(col, row)
         canvas_obj.rect(x, y, CELL_SIZE, CELL_SIZE, fill=1, stroke=0)
+    # Draw home arm fills (float coords)
+    for hx, hy, hw, hh in home_fill_rects:
+        canvas_obj.rect(hx, hy, hw, hh, fill=1, stroke=0)
 
 
 def _compute_gap_arrows():
@@ -366,26 +405,7 @@ def _compute_gap_arrows():
             if pos not in track_cell_set:
                 _add_direction(pos, direction)
 
-    # Gaps in home stretches (entry to first cell, and between home cells)
-    home_cell_set = set()
-    for cells in HOME_CELLS.values():
-        home_cell_set.update(cells)
-    for player in PLAYERS:
-        cells = HOME_CELLS[player["name"]]
-        entry_position = TRACK_CELLS[player["home_entry"]]
-        all_pairs = [(entry_position, cells[0])]
-        for i in range(len(cells) - 1):
-            all_pairs.append((cells[i], cells[i + 1]))
-        for pos_a, pos_b in all_pairs:
-            delta_col = pos_b[0] - pos_a[0]
-            delta_row = pos_b[1] - pos_a[1]
-            if abs(delta_col) >= abs(delta_row):
-                direction = 0 if delta_col > 0 else 2
-            else:
-                direction = 3 if delta_row > 0 else 1
-            for pos in _fill_gap_positions(pos_a, pos_b):
-                if pos not in track_cell_set and pos not in home_cell_set:
-                    _add_direction(pos, direction)
+    # Home stretches use float coords with no gaps — no gap arrows needed
     return gap_arrows
 
 
@@ -457,8 +477,7 @@ def _draw_track_cells(c):
             p = _player_for_cell(idx, "start")
             fill = HexColor(p["light"])
         elif idx in HOME_ENTRY_CELLS:
-            p = _player_for_cell(idx, "home_entry")
-            fill = HexColor(p["light"])
+            fill = CELL_WHITE
         else:
             fill = CELL_WHITE
 
@@ -496,10 +515,7 @@ def _draw_track_cells(c):
             c.setFont("Helvetica-Bold", 6)
             c.drawCentredString(cx, cy - 6, "SLICK END")
         elif idx in HOME_ENTRY_CELLS:
-            p = _player_for_cell(idx, "home_entry")
-            c.setFillColor(HexColor(p["dark"]))
-            c.setFont("Helvetica-Bold", 7)
-            c.drawCentredString(cx, cy - 6, "HOME \u25b8")
+            pass  # HOME label is on the separate marker cell
 
         # Arrow on every cell — below label for special cells, centered for plain cells
         has_label = idx in START_CELLS or idx in TURBO_CELLS or idx in OIL_SLICK_CELLS or idx in OIL_SLICK_END_CELLS or idx in HOME_ENTRY_CELLS
@@ -512,42 +528,52 @@ def _draw_home_stretches(c):
         color = HexColor(player["color"])
         light = HexColor(player["light"])
         dark = HexColor(player["dark"])
-        cells = _home_rects(player)
-        for i, (x, y, w, h) in enumerate(cells):
-            is_finish = (i == len(cells) - 1)
+        geom = HOME_GEOMETRY[player["name"]]
+
+        # Draw HOME marker (half-cell connector)
+        mx, my, mw, mh = geom["marker"]
+        c.setFillColor(light)
+        c.setStrokeColor(CELL_BORDER)
+        c.setLineWidth(0.8)
+        c.rect(mx, my, mw, mh, fill=1, stroke=1)
+        c.setFillColor(dark)
+        c.setFont("Helvetica-Bold", 7)
+        c.drawCentredString(mx + mw / 2, my + mh / 2 - 3, "HOME")
+
+        # Draw arm cells [60]-[63] (smaller than track cells)
+        home_cells = geom["cells"]
+        for i, (hx, hy, hw, hh) in enumerate(home_cells):
+            is_finish = (i == len(home_cells) - 1)
             blend = 0.2 + 0.8 * (i / 3)
             r = light.red * (1 - blend) + color.red * blend
             g = light.green * (1 - blend) + color.green * blend
             b = light.blue * (1 - blend) + color.blue * blend
             c.setFillColor(Color(r, g, b))
-            c.setStrokeColor(dark)
-            c.setLineWidth(1)
-            c.rect(x, y, w, h, fill=1, stroke=1)
-            cell_cx, cell_cy = x + w / 2, y + h / 2
+            c.setStrokeColor(CELL_BORDER)
+            c.setLineWidth(0.8)
+            c.rect(hx, hy, hw, hh, fill=1, stroke=1)
+            cell_cx, cell_cy = hx + hw / 2, hy + hh / 2
             c.setFillColor(white)
+            num = player["home_entry"] + i + 2
             if is_finish:
-                # FINISH marker: number on top, small flag in middle, FINISH text at bottom
-                num = player["home_entry"] + i + 2
+                c.setFont("Helvetica-Bold", 12)
+                c.drawCentredString(cell_cx, cell_cy + 18, str(num))
+                _draw_checkered_flag(c, cell_cx, cell_cy + 2, hw * 0.28)
                 c.setFillColor(white)
-                c.setFont("Helvetica-Bold", 13)
-                c.drawCentredString(cell_cx, cell_cy + 20, str(num))
-                _draw_checkered_flag(c, cell_cx, cell_cy + 2, CELL_SIZE * 0.28)
-                c.setFillColor(white)
-                c.setFont("Helvetica-Bold", 7)
-                c.drawCentredString(cell_cx, cell_cy - 18, "FINISH")
+                c.setFont("Helvetica-Bold", 6)
+                c.drawCentredString(cell_cx, cell_cy - 16, "FINISH")
             else:
-                num = player["home_entry"] + i + 2  # continue numbering from track
-                c.setFont("Helvetica-Bold", 15)
-                c.drawCentredString(cell_cx, cell_cy - 6, str(num))
+                c.setFont("Helvetica-Bold", 14)
+                c.drawCentredString(cell_cx, cell_cy - 5, str(num))
 
 
 def _draw_pit_rows(c):
     """Draw 2×2 colored base areas in the board corners (between cross arms)."""
     # Center each 2×2 base in the 6×6 corner area
     base_positions = {
-        "Red":    (1, 10),   # TL interior
-        "Green":  (10, 10),  # TR interior
-        "Yellow": (10, 1),   # BR interior
+        "Red":    (1, 8),    # TL interior
+        "Green":  (8, 8),    # TR interior
+        "Yellow": (8, 1),    # BR interior
         "Blue":   (1, 1),    # BL interior
     }
     base_size = 3 * CELL_SIZE
@@ -561,8 +587,8 @@ def _draw_pit_rows(c):
 
         # Colored base area
         c.setFillColor(light)
-        c.setStrokeColor(color)
-        c.setLineWidth(2.5)
+        c.setStrokeColor(CELL_BORDER)
+        c.setLineWidth(0.8)
         c.rect(x, y, base_size, base_size, fill=1, stroke=1)
 
         # "PIT ROW" label
@@ -575,16 +601,6 @@ def _draw_center_logo(c):
     """Draw the logo.png image in the center of the board."""
     center_x = BOARD_SIZE / 2
     center_y = BOARD_SIZE / 2
-    # Draw a dark green circle behind the logo
-    radius = CELL_SIZE * 1.4
-    c.setFillColor(HexColor("#1B5E20"))
-    c.setStrokeColor(HexColor("#FDD835"))
-    c.setLineWidth(4)
-    c.circle(center_x, center_y, radius, fill=1, stroke=1)
-    c.setStrokeColor(HexColor("#FB8C00"))
-    c.setLineWidth(2)
-    c.circle(center_x, center_y, radius * 0.88, fill=0, stroke=1)
-    # Draw the actual logo image
     logo = PILImage.open(LOGO_PATH).convert("RGBA")
     background = PILImage.new("RGBA", logo.size, (27, 94, 32, 255))
     composited = PILImage.alpha_composite(background, logo).convert("RGB")
@@ -593,8 +609,8 @@ def _draw_center_logo(c):
     buffer.seek(0)
     reader = ImageReader(buffer)
     aspect = logo.width / logo.height
-    logo_width = radius * 1.5
-    logo_height = logo_width / aspect
+    logo_width = 2 * CELL_SIZE
+    logo_height = 2 * CELL_SIZE
     c.drawImage(reader,
                 center_x - logo_width / 2, center_y - logo_height / 2,
                 width=logo_width, height=logo_height)
