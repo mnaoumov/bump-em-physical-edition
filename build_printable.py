@@ -454,6 +454,156 @@ def _draw_arrow(c, cx, cy, direction, size=7, color=white):
     c.restoreState()
 
 
+def _draw_icon_flag(canvas_obj, cx, cy, size=20, color=None):
+    """Draw a small pennant flag icon for START cells."""
+    if color is None:
+        color = HexColor("#333333")
+    s = size
+    pole_x = cx - s * 0.2
+    canvas_obj.saveState()
+    # Pole
+    canvas_obj.setStrokeColor(color)
+    canvas_obj.setLineWidth(1.5)
+    canvas_obj.line(pole_x, cy - s * 0.4, pole_x, cy + s * 0.45)
+    # Pennant (filled triangle)
+    canvas_obj.setFillColor(color)
+    path = canvas_obj.beginPath()
+    path.moveTo(pole_x, cy + s * 0.45)
+    path.lineTo(cx + s * 0.35, cy + s * 0.15)
+    path.lineTo(pole_x, cy - s * 0.1)
+    path.close()
+    canvas_obj.drawPath(path, fill=1, stroke=0)
+    canvas_obj.restoreState()
+
+
+def _draw_icon_lightning(canvas_obj, cx, cy, size=20):
+    """Draw a lightning bolt icon for TURBO cells."""
+    s = size
+    canvas_obj.saveState()
+    canvas_obj.setFillColor(HexColor("#6A1B9A"))
+    path = canvas_obj.beginPath()
+    # Z-shaped bolt: top bar → diagonal → bottom bar
+    path.moveTo(cx + s * 0.05, cy + s * 0.45)
+    path.lineTo(cx + s * 0.30, cy + s * 0.45)
+    path.lineTo(cx + s * 0.05, cy + s * 0.05)
+    path.lineTo(cx + s * 0.25, cy + s * 0.05)
+    path.lineTo(cx - s * 0.05, cy - s * 0.45)
+    path.lineTo(cx - s * 0.30, cy - s * 0.45)
+    path.lineTo(cx - s * 0.05, cy - s * 0.05)
+    path.lineTo(cx - s * 0.25, cy - s * 0.05)
+    path.close()
+    canvas_obj.drawPath(path, fill=1, stroke=0)
+    canvas_obj.restoreState()
+
+
+def _draw_icon_oil_drop(canvas_obj, cx, cy, size=20, color=None):
+    """Draw an oil drop / teardrop icon for OIL SLICK cells."""
+    if color is None:
+        color = white
+    s = size
+    canvas_obj.saveState()
+    canvas_obj.setFillColor(color)
+    # Bulb (circle at bottom)
+    radius = s * 0.22
+    bulb_cy = cy - s * 0.12
+    canvas_obj.circle(cx, bulb_cy, radius, fill=1, stroke=0)
+    # Pointed top (triangle meeting the circle)
+    path = canvas_obj.beginPath()
+    path.moveTo(cx, cy + s * 0.4)
+    path.lineTo(cx - radius, bulb_cy)
+    path.lineTo(cx + radius, bulb_cy)
+    path.close()
+    canvas_obj.drawPath(path, fill=1, stroke=0)
+    canvas_obj.restoreState()
+
+
+def _draw_icon_skid_marks(canvas_obj, cx, cy, size=20, color=None):
+    """Draw drifting tire skid marks for SLICK END cells."""
+    if color is None:
+        color = white
+    s = size
+    canvas_obj.saveState()
+    canvas_obj.setStrokeColor(color)
+    canvas_obj.setLineWidth(2)
+    canvas_obj.setLineCap(1)  # round caps
+    # Two parallel S-curved tire tracks
+    for lateral_offset in [-s * 0.1, s * 0.1]:
+        path = canvas_obj.beginPath()
+        path.moveTo(cx + lateral_offset - s * 0.15, cy + s * 0.35)
+        path.curveTo(
+            cx + lateral_offset + s * 0.25, cy + s * 0.1,
+            cx + lateral_offset - s * 0.25, cy - s * 0.1,
+            cx + lateral_offset + s * 0.15, cy - s * 0.35,
+        )
+        canvas_obj.drawPath(path, fill=0, stroke=1)
+    canvas_obj.restoreState()
+
+
+def _draw_icon_house(canvas_obj, cx, cy, size=14, color=None):
+    """Draw a small house icon for HOME markers."""
+    if color is None:
+        color = HexColor("#333333")
+    s = size
+    canvas_obj.saveState()
+    canvas_obj.setFillColor(color)
+    # Body (rectangle)
+    body_width = s * 0.6
+    body_height = s * 0.4
+    canvas_obj.rect(cx - body_width / 2, cy - s * 0.4,
+                    body_width, body_height, fill=1, stroke=0)
+    # Roof (triangle)
+    path = canvas_obj.beginPath()
+    path.moveTo(cx, cy + s * 0.4)
+    path.lineTo(cx - s * 0.45, cy)
+    path.lineTo(cx + s * 0.45, cy)
+    path.close()
+    canvas_obj.drawPath(path, fill=1, stroke=0)
+    canvas_obj.restoreState()
+
+
+def _draw_icon_car(canvas_obj, cx, cy, size=50, body_color=None, window_color=None):
+    """Draw a side-view car silhouette for PIT ROW areas."""
+    if body_color is None:
+        body_color = HexColor("#333333")
+    if window_color is None:
+        window_color = white
+    s = size
+    canvas_obj.saveState()
+
+    # Wheels (behind body)
+    canvas_obj.setFillColor(body_color)
+    wheel_y = cy - s * 0.12
+    wheel_radius = s * 0.09
+    canvas_obj.circle(cx - s * 0.22, wheel_y, wheel_radius, fill=1, stroke=0)
+    canvas_obj.circle(cx + s * 0.22, wheel_y, wheel_radius, fill=1, stroke=0)
+
+    # Body profile: hood → windshield → roof → rear window → trunk
+    canvas_obj.setFillColor(body_color)
+    path = canvas_obj.beginPath()
+    path.moveTo(cx - s * 0.38, cy - s * 0.05)   # front bottom
+    path.lineTo(cx - s * 0.38, cy + s * 0.1)    # front bumper top
+    path.lineTo(cx - s * 0.18, cy + s * 0.1)    # hood end
+    path.lineTo(cx - s * 0.08, cy + s * 0.28)   # windshield top
+    path.lineTo(cx + s * 0.13, cy + s * 0.28)   # roof end
+    path.lineTo(cx + s * 0.25, cy + s * 0.1)    # rear window bottom
+    path.lineTo(cx + s * 0.38, cy + s * 0.1)    # trunk end
+    path.lineTo(cx + s * 0.38, cy - s * 0.05)   # rear bottom
+    path.close()
+    canvas_obj.drawPath(path, fill=1, stroke=0)
+
+    # Window cutout (lighter trapezoid)
+    canvas_obj.setFillColor(window_color)
+    window = canvas_obj.beginPath()
+    window.moveTo(cx - s * 0.06, cy + s * 0.25)   # windshield top
+    window.lineTo(cx + s * 0.11, cy + s * 0.25)   # roof line
+    window.lineTo(cx + s * 0.20, cy + s * 0.12)   # rear window bottom
+    window.lineTo(cx - s * 0.14, cy + s * 0.12)   # dashboard
+    window.close()
+    canvas_obj.drawPath(window, fill=1, stroke=0)
+
+    canvas_obj.restoreState()
+
+
 def _player_for_cell(idx, attr):
     for p in PLAYERS:
         if p[attr] == idx:
@@ -487,39 +637,45 @@ def _draw_track_cells(c):
         c.rect(x, y, w, h, fill=1, stroke=1)
 
         cx, cy = x + w / 2, y + h / 2
+        is_special = (idx in START_CELLS or idx in TURBO_CELLS
+                      or idx in OIL_SLICK_CELLS or idx in OIL_SLICK_END_CELLS)
 
-        # Cell number
+        # Cell number — raised for special cells to make room for icon
         if idx in OIL_SLICK_CELLS or idx in OIL_SLICK_END_CELLS:
             c.setFillColor(white)
         else:
             c.setFillColor(HexColor("#616161"))
         c.setFont("Helvetica-Bold", 13)
-        c.drawCentredString(cx, cy + 8, str(num))
+        number_y = cy + 26 if is_special else cy + 8
+        c.drawCentredString(cx, number_y, str(num))
 
-        # Special labels
+        # Icons + labels for special cells
         if idx in START_CELLS:
             p = _player_for_cell(idx, "start")
+            _draw_icon_flag(c, cx, cy + 4, size=20, color=HexColor(p["dark"]))
             c.setFillColor(HexColor(p["dark"]))
             c.setFont("Helvetica-Bold", 8)
-            c.drawCentredString(cx, cy - 6, "START")
+            c.drawCentredString(cx, cy - 16, "START")
         elif idx in TURBO_CELLS:
+            _draw_icon_lightning(c, cx, cy + 4, size=20)
             c.setFillColor(HexColor("#6A1B9A"))
             c.setFont("Helvetica-Bold", 7)
-            c.drawCentredString(cx, cy - 6, "TURBO")
+            c.drawCentredString(cx, cy - 16, "TURBO")
         elif idx in OIL_SLICK_CELLS:
+            _draw_icon_oil_drop(c, cx, cy + 4, size=20, color=white)
             c.setFillColor(white)
             c.setFont("Helvetica-Bold", 6)
-            c.drawCentredString(cx, cy - 6, "OIL SLICK")
+            c.drawCentredString(cx, cy - 16, "OIL SLICK")
         elif idx in OIL_SLICK_END_CELLS:
+            _draw_icon_skid_marks(c, cx, cy + 4, size=20, color=white)
             c.setFillColor(white)
             c.setFont("Helvetica-Bold", 6)
-            c.drawCentredString(cx, cy - 6, "SLICK END")
+            c.drawCentredString(cx, cy - 16, "SLICK END")
         elif idx in HOME_ENTRY_CELLS:
             pass  # HOME label is on the separate marker cell
 
-        # Arrow on every cell — below label for special cells, centered for plain cells
-        has_label = idx in START_CELLS or idx in TURBO_CELLS or idx in OIL_SLICK_CELLS or idx in OIL_SLICK_END_CELLS or idx in HOME_ENTRY_CELLS
-        arrow_y = cy - 22 if has_label else cy - 8
+        # Arrow on every cell — lower for special cells
+        arrow_y = cy - 32 if is_special else (cy - 22 if idx in HOME_ENTRY_CELLS else cy - 8)
         _draw_arrow(c, cx, arrow_y, TRACK_ARROWS[idx], color=HexColor("#BDBDBD"))
 
 
@@ -536,9 +692,12 @@ def _draw_home_stretches(c):
         c.setStrokeColor(CELL_BORDER)
         c.setLineWidth(0.8)
         c.rect(mx, my, mw, mh, fill=1, stroke=1)
+        marker_cx = mx + mw / 2
+        marker_cy = my + mh / 2
+        _draw_icon_house(c, marker_cx, marker_cy + 5, size=14, color=dark)
         c.setFillColor(dark)
-        c.setFont("Helvetica-Bold", 7)
-        c.drawCentredString(mx + mw / 2, my + mh / 2 - 3, "HOME")
+        c.setFont("Helvetica-Bold", 6)
+        c.drawCentredString(marker_cx, marker_cy - 10, "HOME")
 
         # Draw arm cells [60]-[63] (smaller than track cells)
         home_cells = geom["cells"]
@@ -591,10 +750,13 @@ def _draw_pit_rows(c):
         c.setLineWidth(0.8)
         c.rect(x, y, base_size, base_size, fill=1, stroke=1)
 
-        # "PIT ROW" label
+        # Car icon + "PIT ROW" label
+        pit_cx = x + base_size / 2
+        pit_cy = y + base_size / 2
+        _draw_icon_car(c, pit_cx, pit_cy + 16, size=50, body_color=dark, window_color=light)
         c.setFillColor(dark)
         c.setFont("Helvetica-Bold", 11)
-        c.drawCentredString(x + base_size / 2, y + base_size / 2 - 4, "PIT ROW")
+        c.drawCentredString(pit_cx, pit_cy - 24, "PIT ROW")
 
 
 def _draw_center_logo(c):

@@ -30,29 +30,33 @@ At each of the 2 junctions, the path crosses over itself.
 - Each base section: ~12 cells going around the base + ~3 cells for the crossing transition
 - 4 crossing cells are shared between adjacent sections
 
-### Cell numbering grid (from screenshot)
+### Cell numbering grid (12×12 physical grid)
 
-The track cell numbers laid out on an 11×11 spatial grid (`.` = empty / base interior).
+The track cell numbers on the 12×12 board grid (`.` = pit row interior).
 Home-finish arms shown in `[brackets]` — same numbers as main track but separate paths.
+Home arms are smaller cells centered in the 2-cell gap (cols 5–6 or rows 5–6).
 
-|     |     |     |     |     |      |     |     |     |     |     |
-| --- | --- | --- | --- | --- | ---- | --- | --- | --- | --- | --- |
-| 55  | 56  | 57  | 58  | 59  | [60] | 37  | 38  | →   | 39  | 40  |
-| 54  |     |     |     | 60  | [61] | 36  |     |     |     | 41  |
-| ↑   |     |     |     | 1   | [62] | 35  |     |     |     | 42  |
-| 53  |     |     |     | 2   | [63] | 34  |     |     |     | 43  |
-| 52  | 51  | 50  | 49  | ↓←  | 48   | ↑←  | 47  | 46  | 45  | 44  |
-| [15]| [16]| [17]| [18]| 3   |      | 33  | [48]| [47]| [46]| [45]|
-| 14  | 15  | 16  | 17  | ↓→  | 18   | ↑→  | 19  | 20  | 21  | 22  |
-| 13  |     |     |     | 4   | [33] | 32  |     |     |     | 23  |
-| 12  |     |     |     | 5   | [32] | 31  |     |     |     | ↓   |
-| 11  |     |     |     | 6   | [31] | 30  |     |     |     | 24  |
-| 10  | 9   | ←   | 8   | 7   | [30] | 29  | 28  | 27  | 26  | 25  |
+|      |      |      |      |      |      |      |      |      |      |      |      |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+|  55  |  56  |  57  |  58  |  59  | [60] |      |  37  |  38  |   →  |  39  |  40  |
+|  54  |   .  |   .  |   .  |  60  | [61] |      |  36  |   .  |   .  |   .  |  41  |
+|   ↑  |   .  |   .  |   .  |   1  | [62] |      |  35  |   .  |   .  |   .  |  42  |
+|  53  |   .  |   .  |   .  |   2  | [63] |      |  34  |   .  |   .  |   .  |  43  |
+|  52  |  51  |  50  |  49  |  ↓←  |   ←  |  48  |  ↑←  |  47  |  46  |  45  |  44  |
+|      |      |      |      |   3  |      |      |   ↑  | [48] | [47] | [46] | [45] |
+| [15] | [16] | [17] | [18] |   ↓  |      |      |  33  |      |      |      |      |
+|  14  |  15  |  16  |  17  |  ↓→  |  18  |   →  |  ↑→  |  19  |  20  |  21  |  22  |
+|  13  |   .  |   .  |   .  |   4  |      | [33] |  32  |   .  |   .  |   .  |  23  |
+|  12  |   .  |   .  |   .  |   5  |      | [32] |  31  |   .  |   .  |   .  |   ↓  |
+|  11  |   .  |   .  |   .  |   6  |      | [31] |  30  |   .  |   .  |   .  |  24  |
+|  10  |   9  |   ←  |   8  |   7  |      | [30] |  29  |  28  |  27  |  26  |  25  |
 
 **Arrows:** `→←↑↓` show direction of travel between consecutive cells.
 Arrow pairs at **crossings** show two perpendicular tracks passing through:
-`↓←` (2→3 / 48→49), `↑←` (33→34 / 47→48),
-`↓→` (3→4 / 17→18), `↑→` (18→19 / 32→33).
+`↓←` at (4,7): 2→3 ↓ / 48→49 ←;
+`↑←` at (7,7): 33→34 ↑ / 47→48 ←;
+`↓→` at (4,4): 3→4 ↓ / 17→18 →;
+`↑→` at (7,4): 32→33 ↑ / 18→19 →.
 **`[nn]`** = home-finish arm cell (not main track).
 
 #### Path direction (cell number order)
@@ -64,10 +68,10 @@ Arrow pairs at **crossings** show two perpendicular tracks passing through:
 
 #### Crossing junctions (where vertical & horizontal channels intersect)
 
-- **Top crossing** (between Red & Green): around cells 48 / 3 area (center row 4)
-- **Bottom crossing** (between Blue & Yellow): around cells 18 / 33 area (center row 6)
-- **Left crossing** (between Red & Blue): around cells 2-3 / 48-49 area (center col 4)
-- **Right crossing** (between Green & Yellow): around cells 33 / 47 area (center col 6)
+- **(4,7)** Red↔Blue left crossing: cells 2→3 ↓ cross with 48→49 ←
+- **(4,4)** Blue↔Yellow bottom-left crossing: cells 3→4 ↓ cross with 17→18 →
+- **(7,4)** Yellow↔Green bottom-right crossing: cells 32→33 ↑ cross with 18→19 →
+- **(7,7)** Green↔Red right crossing: cells 33→34 ↑ cross with 47→48 ←
 
 #### Cell roles (1–60)
 
@@ -100,21 +104,22 @@ Separate paths branching off the main track at each "Entrance to home" cell.
 They use the **same numbers** as the main track but are distinct paths — not to be confused.
 
 | Player | Entrance (main track) | Home arm cells | Finish |
-|--------|-----------------------|----------------|--------|
+| ------ | --------------------- | -------------- | ------ |
 | Red    | 59                    | 60, 61, 62, 63 | 63     |
 | Blue   | 14                    | 15, 16, 17, 18 | 18     |
 | Yellow | 29                    | 30, 31, 32, 33 | 33     |
 | Green  | 44                    | 45, 46, 47, 48 | 48     |
 
-### Grid (16×16)
+### Grid (12×12)
 - CELL_SIZE = (BOARD_SIZE - 2*MARGIN) / GRID_SIZE
-- Base areas (with track around them):
-  - Red (TL): cols 0-5, rows 10-15
-  - Green (TR): cols 10-15, rows 10-15
-  - Yellow (BR): cols 10-15, rows 0-5
-  - Blue (BL): cols 0-5, rows 0-5
-- Connection channels: cols 6-9 (vertical), rows 6-9 (horizontal)
-- Crossings at center area where channels intersect
+- Base areas (track around perimeter, pit row interior):
+  - Red (TL): cols 0-4, rows 7-11; pit rows cols 1-3, rows 8-10
+  - Blue (BL): cols 0-4, rows 0-4; pit rows cols 1-3, rows 1-3
+  - Yellow (BR): cols 7-11, rows 0-4; pit rows cols 8-10, rows 1-3
+  - Green (TR): cols 7-11, rows 7-11; pit rows cols 8-10, rows 8-10
+- Center channel: cols 5-6 (vertical), rows 5-6 (horizontal)
+- Crossings at (4,4), (4,7), (7,4), (7,7)
+- Home arms: smaller cells (0.9×) centered in center channel gap
 
 ### Player layout
 - Red = TL, Green = TR, Yellow = BR, Blue = BL
@@ -141,32 +146,32 @@ They use the **same numbers** as the main track but are distinct paths — not t
 
 ## Deck Composition (54 cards)
 
-| Card | Count |
-|------|-------|
-| 1 | 5 |
-| 2–11 | 4 each |
-| 12 | 5 |
-| BUMP'EM | 4 |
+| Card    | Count  |
+| ------- | ------ |
+| 1       | 5      |
+| 2–11    | 4 each |
+| 12      | 5      |
+| BUMP'EM | 4      |
 
 Reshuffle when deck is exhausted.
 
 ## Ticket Rules (exact wording from in-game UI)
 
-| # | Wording | Bold emphasis |
-|---|---------|---------------|
-| 1 | Move a car from pit row to your start space **OR** move a car on the track one space forward. | Move, OR, one space forward |
-| 2 | Move a car on the track **two** spaces forward. | two |
-| 3 | Move a car on the track **three spaces forward** **AND** take another **move ticket.** | three spaces forward, AND, move ticket |
-| 4 | Move a car on the track **four** spaces forward. | four |
-| 5 | Move a car on the track **five** spaces forward. | five |
-| 6 | Move a car on the track **six spaces forward** **OR** **nine spaces backward.** | six spaces forward, OR, nine spaces backward |
-| 7 | Move a car on the track **seven spaces forward** **OR** **switch one of your cars** with another player's car. | seven spaces forward, OR, switch one of your cars |
-| 8 | Move a car on the track **eight spaces forward** **OR** split the move **between two cars.** | eight spaces forward, OR, between two cars |
-| 9 | Move a car on the track **nine spaces forward** **OR** **six spaces backward.** | nine spaces forward, OR, six spaces backward |
-| 10 | Move a car on the track ten spaces forward. | ten (optional bold) |
-| 11 | Move a car on the track **eleven** spaces forward **OR** one space backward. | eleven, OR |
-| 12 | Move a car from pit row to your start space **OR** move a car on the track **twelve spaces forward.** | OR, twelve spaces forward |
-| BUMP'EM | Take a car from your **pit row** and **bump** another player's car. | pit row, bump |
+| #       | Wording                                                                                                | Bold emphasis                                     |
+| ------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| 1       | Move a car from pit row to your start space **OR** move a car on the track one space forward.          | Move, OR, one space forward                       |
+| 2       | Move a car on the track **two** spaces forward.                                                        | two                                               |
+| 3       | Move a car on the track **three spaces forward** **AND** take another **move ticket.**                 | three spaces forward, AND, move ticket            |
+| 4       | Move a car on the track **four** spaces forward.                                                       | four                                              |
+| 5       | Move a car on the track **five** spaces forward.                                                       | five                                              |
+| 6       | Move a car on the track **six spaces forward** **OR** **nine spaces backward.**                        | six spaces forward, OR, nine spaces backward      |
+| 7       | Move a car on the track **seven spaces forward** **OR** **switch one of your cars** with another car.  | seven spaces forward, OR, switch one of your cars |
+| 8       | Move a car on the track **eight spaces forward** **OR** split the move **between two cars.**           | eight spaces forward, OR, between two cars        |
+| 9       | Move a car on the track **nine spaces forward** **OR** **six spaces backward.**                        | nine spaces forward, OR, six spaces backward      |
+| 10      | Move a car on the track ten spaces forward.                                                            | ten (optional bold)                               |
+| 11      | Move a car on the track **eleven** spaces forward **OR** one space backward.                           | eleven, OR                                        |
+| 12      | Move a car from pit row to your start space **OR** move a car on the track **twelve spaces forward.**  | OR, twelve spaces forward                         |
+| BUMP'EM | Take a car from your **pit row** and **bump** another player's car.                                    | pit row, bump                                     |
 
 ---
 
